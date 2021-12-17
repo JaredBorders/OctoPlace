@@ -31,5 +31,11 @@
     "ethers": "^5.0.0",
     "hardhat": "^2.0.4",
     "husky": "^4.2.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.1",
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "ipfs-http-client": "^55.0.0"
   }
 }
