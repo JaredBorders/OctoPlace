@@ -9,7 +9,7 @@ The first things you need to do are cloning this repository and installing its
 dependencies:
 
 ```sh
-git clone 
+git clone https://github.com/JaredBorders/OctoPlace.git
 cd OctoPlace
 npm install
 ```
