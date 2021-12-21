@@ -18,12 +18,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
  * This can be used e.g. to track the number of elements in a mapping, 
  * issuing ERC721 ids, or counting request ids.
  */
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-/*
- * Provides counters that can only be incremented, decremented or reset. 
- * This can be used e.g. to track the number of elements in a mapping, 
- * issuing ERC721 ids, or counting request ids.
- */
 import "@openzeppelin/contracts/utils/Counters.sol";
 /*
  * Inheriting from ReentrancyGuard will make the nonReentrant modifier 
@@ -32,6 +26,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  */
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-/// @title A Market for NFTs
+/// @title Non-Fungible Token based on ERC721 standard
 /// @author jaredborders
-contract Market is ReentrancyGuard {}
+contract Token {}
