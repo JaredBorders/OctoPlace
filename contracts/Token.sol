@@ -19,12 +19,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
  * issuing ERC721 ids, or counting request ids.
  */
 import "@openzeppelin/contracts/utils/Counters.sol";
-/**
- * Inheriting from ReentrancyGuard will make the nonReentrant modifier 
- * available, which can be applied to functions to make sure there are 
- * no nested (reentrant) calls to them.
- */
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /// @title Non-Fungible Token based on ERC721 standard
 /// @author jaredborders
