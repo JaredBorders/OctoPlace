@@ -1,58 +1,48 @@
-// This is a script for deploying your contracts. You can adapt it to deploy
-// yours, or create new ones.
+// We require the Hardhat Runtime Environment explicitly here. This is optional
+// but useful for running the script in a standalone fashion through `node <script>`.
+//
+// When running the script with `npx hardhat run <script>` you'll find the Hardhat
+// Runtime Environment's members available in the global scope.
+const hre = require('hardhat');
+
 async function main() {
-  // This is just a convenience check
-  if (network.name === "hardhat") {
-    console.warn(
-      "You are trying to deploy a contract to the Hardhat Network, which" +
-        "gets automatically created and destroyed every time. Use the Hardhat" +
-        " option '--network localhost'"
-    );
-  }
+	// Hardhat always runs the compile task when running scripts with its command
+	// line interface.
+	//
+	// If this script is run directly using `node` you may want to call compile
+	// manually to make sure everything is compiled
+	// await hre.run('compile');
 
-  // ethers is avaialble in the global scope
-  const [deployer] = await ethers.getSigners();
-  console.log(
-    "Deploying the contracts with the account:",
-    await deployer.getAddress()
-  );
+	// Deploy Market.sol
+	const Market = await hre.ethers.getContractFactory('Market');
+	const market = await Market.deploy();
 
-  console.log("Account balance:", (await deployer.getBalance()).toString());
+	await market.deployed();
 
-  const Market = await ethers.getContractFactory("Market");
-  const market = await Market.deploy();
-  await market.deployed();
+	console.log('Market deployed to:', market.address);
 
-  console.log("Market address:", market.address);
+	// Deploy Token.sol
+	const Token = await hre.ethers.getContractFactory('Token');
+	const token = await Token.deploy(market.address);
 
-  // We also save the contract's artifacts and address in the frontend directory
-  saveFrontendFiles(market);
+	await token.deployed();
+
+	console.log('Token deployed to:', token.address);
+
+	// Deploy Token1155.sol
+	const Token1155 = await hre.ethers.getContractFactory('Token1155');
+	const token1155 = await Token.deploy(market.address);
+
+	await token1155.deployed();
+
+	console.log('Token1155 deployed to:', token1155.address);
 }
 
-function saveFrontendFiles(token) {
-  const fs = require("fs");
-  const contractsDir = __dirname + "/../frontend/src/contracts";
-
-  if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir);
-  }
-
-  fs.writeFileSync(
-    contractsDir + "/contract-address.json",
-    JSON.stringify({ Market: market.address }, undefined, 2)
-  );
-
-  const MarketArtifact = artifacts.readArtifactSync("Market");
-
-  fs.writeFileSync(
-    contractsDir + "/Market.json",
-    JSON.stringify(MarketArtifact, null, 2)
-  );
-}
-
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+	.then(() => process.exit(0))
+	.catch((error) => {
+		console.error(error);
+		process.exit(1);
+	});

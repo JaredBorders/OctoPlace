@@ -30,9 +30,7 @@ npx hardhat run scripts/deploy.js --network localhost
 Finally, we can run the frontend with:
 
 ```sh
-cd frontend
-npm install
-npm start
+npm run dev
 ```
 
 > Note: There's [an issue in `ganache-core`](https://github.com/trufflesuite/ganache-core/issues/650) that can make the `npm install` step fail. 
@@ -52,6 +50,18 @@ You can find detailed instructions on using this repository and many tips in [it
 - [Setting up Metamask](https://hardhat.org/tutorial/8-frontend/#setting-up-metamask)
 - [Hardhat's full documentation](https://hardhat.org/getting-started/)
 
+Try running some of the following tasks:
+
+```shell
+npx hardhat accounts
+npx hardhat compile
+npx hardhat clean
+npx hardhat test
+npx hardhat node
+node scripts/sample-script.js
+npx hardhat help
+```
+
 ## What’s Included?
 
 - [Hardhat](https://hardhat.org/): An Ethereum development task runner and testing network.
@@ -66,3 +76,5 @@ You can find detailed instructions on using this repository and many tips in [it
   console, try resetting your Metamask account. This will reset the account's
   transaction history and also the nonce. Open Metamask, click on your account
   followed by `Settings > Advanced > Reset Account`.
+
+
