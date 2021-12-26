@@ -102,6 +102,46 @@ contract Market is ReentrancyGuard {
     }
 
     /**
+     * @notice create and list a market item
+     * @param tokenAddress address of ERC1155Tradable contract
+     * @param tokenId id of ERC1155Tradable (@dev NOT item id)
+     * @param price token listing price
+     */
+    function createMarketItemERC1155(
+        address tokenAddress,
+        uint256 tokenId,
+        uint256 price
+    ) public payable nonReentrant {
+        require(price > 0, "Item must have a valid listing price");
+
+        // increment number of items listed
+        _itemIds.increment();
+        uint256 itemId = _itemIds.current();
+
+        // add new market item to {id => item} mapping.
+        idToMarketItem[itemId] = MarketItem(
+            itemId,
+            tokenId,
+            price,
+            tokenAddress,
+            payable(msg.sender),
+            payable(address(0)),
+            false
+        );
+
+        // transfer token from user to this address (market)
+        IERC1155(tokenAddress).safeTransferFrom(msg.sender, address(this), tokenId, 0, "");
+        emit MarketItemCreated(
+            itemId,
+            price,
+            tokenId,
+            tokenAddress,
+            msg.sender,
+            address(0)
+        );
+    }
+
+    /**
      * @notice buy market item and transfer ownership
      * @param tokenAddress address of token contract
      * @param itemId id of token (@dev NOT token id)
@@ -121,6 +161,34 @@ contract Market is ReentrancyGuard {
 
         // transfer ownership to buyer (i.e. msg.sender)
         IERC721(tokenAddress).transferFrom(address(this), msg.sender, tokenId);
+
+        // update market item state
+        idToMarketItem[itemId].owner = payable(msg.sender);
+        idToMarketItem[itemId].sold = true;
+
+        _itemsSold.increment();
+    }
+
+    /**
+     * @notice buy market item and transfer ownership
+     * @param tokenAddress address of token contract
+     * @param itemId id of token (@dev NOT token id)
+     */
+    function buyMarketItemERC1155(address tokenAddress, uint256 itemId)
+        public
+        payable
+        nonReentrant
+    {
+        // fetch price and tokenId of token to be sold
+        uint256 price = idToMarketItem[itemId].price;
+        uint256 tokenId = idToMarketItem[itemId].tokenId;
+        require(msg.value == price, "insufficient funds for transaction");
+
+        // transfer selling price to current token owner (i.e. pay for asset)
+        idToMarketItem[itemId].seller.transfer(msg.value);
+
+        // transfer token from user to this address (market)
+        IERC1155(tokenAddress).safeTransferFrom(address(this), msg.sender, tokenId, 0, "");
 
         // update market item state
         idToMarketItem[itemId].owner = payable(msg.sender);

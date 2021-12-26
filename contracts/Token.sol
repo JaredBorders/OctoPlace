@@ -32,7 +32,7 @@ contract Token is ERC721URIStorage {
     }
 
     /** 
-     * @notice create/mint NFT
+     * @dev create/mint NFT
      * @param tokenURI token metadata
      * @return unique token id
      */

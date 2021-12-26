@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import { tokenAddress, marketAddress } from '../config';
+import ItemCard from './components/ItemCard';
 import axios from 'axios';
 import Web3Modal from 'web3modal';
-import { tokenAddress, marketAddress } from '../config';
 
 // Market and Token artifacts
 import Market from '../src/artifacts/contracts/Market.sol/Market.json';
@@ -90,6 +91,15 @@ const MarketView = () => {
 		getMarketItems();
 	};
 
+	// dynamic item height
+	const [spans, setSpans] = useState(0);
+	const handleImageLoad = (event) => {
+		const imageHeight = event.target.clientHeight;
+		const spans = Math.ceil(imageHeight + 200);
+		setSpans(spans);
+		console.log(spans);
+	};
+
 	return (
 		<>
 			{!loading && marketItems.length == 0 ? (
@@ -97,42 +107,14 @@ const MarketView = () => {
 			) : (
 				<div className="flex justify-center">
 					<div className="px-4" style={{ maxWidth: '1600px' }}>
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+						<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
 							{marketItems.map((marketItem, i) => (
-								<div
-									key={i}
-									className="border shadow rounded-xl overflow-hidden"
-								>
-									<img
-										src={marketItem.image}
-										alt="Market Item Image"
+								<div key={i} className="row-span-3">
+									<ItemCard
+										marketItem={marketItem}
+										includeBuyButton={true} 
+										buyMarketItem={buyMarketItem} 
 									/>
-									<div className="p-4">
-										<p
-											style={{ height: '64px' }}
-											className="text-2xl font-semibold"
-										>
-											{marketItem.name}
-										</p>
-										<div
-											style={{ height: '70px', overflow: 'hidden' }}
-										>
-											<p className="text-gray-400">
-												{marketItem.description}
-											</p>
-										</div>
-									</div>
-									<div className="p-4 bg-gray-900">
-										<p className="text-2xl mb-4 font-bold text-white">
-											{marketItem.price} ETH
-										</p>
-										<button
-											className="w-full bg-purple-500 text-white font-bold py-2 px-12 rounded"
-											onClick={() => buyNft(nft)}
-										>
-											Buy
-										</button>
-									</div>
 								</div>
 							))}
 						</div>
