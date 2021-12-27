@@ -3,17 +3,17 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { useRouter } from 'next/router';
-import { marketAddress, erc721TradableAddress } from '../config';
+import { marketAddress, erc1155TradableAddress } from '../config';
 import Web3Modal from 'web3modal';
 
 // Market and Tradable token artifacts
 import Market from '../src/artifacts/contracts/Market.sol/Market.json';
-import ERC721Tradable from '../src/artifacts/contracts/ERC721Tradable.sol/ERC721Tradable.json';
+import ERC1155Tradable from '../src/artifacts/contracts/ERC1155Tradable.sol/ERC1155Tradable.json';
 
 // sets and pins items to ipfs
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
-const CreateView = () => {
+const CreateERC1155View = () => {
 	const [imageUrl, setImageUrl] = useState(null);
 	const [formInput, updateFormInput] = useState({
 		price: '',
@@ -61,7 +61,7 @@ const CreateView = () => {
 			const url = `https://ipfs.infura.io/ipfs/${added.path}`;
 
 			/**
-			 * Connect to user's wallet, create new Token via the ERC721Tradable contract,
+			 * Connect to user's wallet, create new Token via the ERC1155Tradable contract,
 			 * pointing to url on IPFS (image) and add new token's:
 			 * address, id and price to the Market contract
 			 */
@@ -70,22 +70,22 @@ const CreateView = () => {
 			const provider = new ethers.providers.Web3Provider(connection);
 			const signer = provider.getSigner();
 
-			// create ERC721Tradable token via ERC721Tradable contract
-			let erc721Tradable = new ethers.Contract(
-				erc721TradableAddress,
-				ERC721Tradable.abi,
+			// create ERC1155Tradable token via ERC1155Tradable contract
+			let erc1155Tradable = new ethers.Contract(
+				erc1155TradableAddress,
+				ERC1155Tradable.abi,
 				signer
 			);
-			let transaction = await erc721Tradable.createToken(url);
+			let transaction = await erc1155Tradable.create(marketAddress, url);
 			let tx = await transaction.wait();
 
 			let event = tx.events[0];
-			let tokenId = event.args[2].toNumber();
+			let tokenId = event.args[1].toNumber();
 
 			// add token information to market (i.e. create a new market item)
 			let market = new ethers.Contract(marketAddress, Market.abi, signer);
-			transaction = await market.createMarketItem(
-				erc721TradableAddress,
+			transaction = await market.createMarketItemERC1155(
+				erc1155TradableAddress,
 				tokenId,
 				ethers.utils.parseUnits(formInput.price, 'ether')
 			);
@@ -101,7 +101,9 @@ const CreateView = () => {
 		<div className="flex justify-center">
 			<div className="w-1/2 flex flex-col pb-12">
 				<div className="flex mt-4 justify-center">
-					<p className="text-3xl justify-center">Mint NFT</p>
+					<p className="text-3xl justify-center">
+						Mint NFT (ERC1155)
+					</p>
 				</div>
 				<input
 					placeholder="Asset Name (22 characters max)"
@@ -151,4 +153,4 @@ const CreateView = () => {
 	);
 };
 
-export default CreateView;
+export default CreateERC1155View;

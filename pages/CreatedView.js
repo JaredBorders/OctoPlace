@@ -94,10 +94,7 @@ const CreatedView = () => {
 			})
 		);
 
-		createdMarketItemsERC1155.length != 0
-			? setCreatedNFTs(...createdMarketItems, createdMarketItemsERC1155)
-			: setCreatedNFTs(createdMarketItems);
-
+		setCreatedNFTs(createdMarketItems.concat(createdMarketItemsERC1155));
 		setLoading(false);
 	}
 

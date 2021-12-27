@@ -91,10 +91,7 @@ const MarketView = () => {
 			})
 		);
 
-		unsoldMarketItems1155.length != 0
-			? setMarketItems(...unsoldMarketItems, unsoldMarketItems1155)
-			: setMarketItems(unsoldMarketItems);
-			
+		setMarketItems(unsoldMarketItems.concat(unsoldMarketItems1155))
 		setLoading(false);
 	};
 

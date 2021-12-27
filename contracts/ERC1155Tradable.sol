@@ -32,6 +32,8 @@ contract ERC1155Tradable is ERC1155 {
 
     address marketAddress;
 
+    event CreatedTradableToken(uint256 tokenId);
+
     constructor(
         string memory _uri,
         address _marketAddress
@@ -64,6 +66,8 @@ contract ERC1155Tradable is ERC1155 {
 
         // Gives Market contract approval to transact tokens between users
         setApprovalForAll(marketAddress, true);
+
+        emit CreatedTradableToken(newTokenId);
 
         return newTokenId;
     }
