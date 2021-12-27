@@ -31,14 +31,21 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * no nested (reentrant) calls to them.
  */
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+/**
+ * A contract Implementing ERC1155Holder registers itself as 
+ * aware of the ERC1155 protocol, thereby allowing for ERC1155 token
+ * transfers. See https://docs.openzeppelin.com/contracts/3.x/erc1155#sending-to-contracts
+ */
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 /// @title A Market for NFTs
 /// @author jaredborders
 contract Market is ReentrancyGuard, ERC1155Holder {
     using Counters for Counters.Counter;
-    Counters.Counter private _itemIds;
-    Counters.Counter private _itemsSold;
+    Counters.Counter private _item721Ids;
+    Counters.Counter private _items721Sold;
+    Counters.Counter private _item1155Ids;
+    Counters.Counter private _items1155Sold;
 
     event MarketItemCreated(
         uint256 indexed itemId,
@@ -77,8 +84,8 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         require(price > 0, "Item must have a valid listing price");
 
         // increment number of items listed
-        _itemIds.increment();
-        uint256 itemId = _itemIds.current();
+        _item721Ids.increment();
+        uint256 itemId = _item721Ids.current();
 
         // add new market item to {id => item} mapping.
         idToMarketItem[itemId] = MarketItem(
@@ -118,8 +125,8 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         require(price > 0, "Item must have a valid listing price");
 
         // increment number of items listed
-        _itemIds.increment();
-        uint256 itemId = _itemIds.current();
+        _item1155Ids.increment();
+        uint256 itemId = _item1155Ids.current();
 
         // add new market item to {id => item} mapping.
         idToMarketItem[itemId] = MarketItem(
@@ -170,7 +177,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         idToMarketItem[itemId].owner = payable(msg.sender);
         idToMarketItem[itemId].sold = true;
 
-        _itemsSold.increment();
+        _items721Sold.increment();
     }
 
     /**
@@ -198,7 +205,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         idToMarketItem[itemId].owner = payable(msg.sender);
         idToMarketItem[itemId].sold = true;
 
-        _itemsSold.increment();
+        _items1155Sold.increment();
     }
 
     /**
@@ -222,13 +229,42 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         view 
         returns (MarketItem[] memory) 
     {
-        uint256 itemCount = _itemIds.current();
-        uint256 unsoldItemCount = itemCount - _itemsSold.current();
+        uint256 itemCount = _item721Ids.current();
+        uint256 unsoldItemCount = itemCount - _items721Sold.current();
         uint256 currentIndex = 0;
 
         MarketItem[] memory items = new MarketItem[](unsoldItemCount);
         for (uint256 i = 0; i < itemCount; i++) {
             // if item owner is not set (i.e. has not been sold)
+            /// @notice itemId will never be 0 due to how counter is used
+            if (idToMarketItem[i + 1].owner == address(0)) {
+                uint256 currentId = idToMarketItem[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
+        }
+
+        return items;
+    }
+
+    /**
+     * @return all market items which have not been sold
+     * @notice items where owner has been set to address(0) have not been sold
+     */
+    function getAllUnsoldMarketItemsERC1155() 
+        public 
+        view 
+        returns (MarketItem[] memory) 
+    {
+        uint256 itemCount = _item1155Ids.current();
+        uint256 unsoldItemCount = itemCount - _items1155Sold.current();
+        uint256 currentIndex = 0;
+
+        MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+        for (uint256 i = 0; i < itemCount; i++) {
+            // if item owner is not set (i.e. has not been sold)
+            /// @notice itemId will never be 0 due to how counter is used
             if (idToMarketItem[i + 1].owner == address(0)) {
                 uint256 currentId = idToMarketItem[i + 1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];
@@ -249,7 +285,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         view 
         returns (MarketItem[] memory) 
     {
-        uint256 totalItemCount = _itemIds.current();
+        uint256 totalItemCount = _item721Ids.current();
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
 
@@ -261,6 +297,40 @@ contract Market is ReentrancyGuard, ERC1155Holder {
 
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
+            /// @notice itemId will never be 0 due to how counter is used
+            if (idToMarketItem[i + 1].owner == msg.sender) {
+                uint256 currentId = idToMarketItem[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
+        }
+
+        return items;
+    }
+
+    /**
+     * @notice fetch market items that are owned by the caller
+     * @return market items belonging to the caller
+     */
+    function getMarketItemsOwnedByCallerERC1155() 
+        public 
+        view 
+        returns (MarketItem[] memory) 
+    {
+        uint256 totalItemCount = _item1155Ids.current();
+        uint256 itemCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].owner == msg.sender) {
+                itemCount += 1;
+            }
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            /// @notice itemId will never be 0 due to how counter is used
             if (idToMarketItem[i + 1].owner == msg.sender) {
                 uint256 currentId = idToMarketItem[i + 1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];
@@ -281,7 +351,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         view 
         returns (MarketItem[] memory) 
     {
-        uint256 totalItemCount = _itemIds.current();
+        uint256 totalItemCount = _item721Ids.current();
         uint256 itemCount = 0;
         uint256 currentIndex = 0;
 
@@ -293,6 +363,40 @@ contract Market is ReentrancyGuard, ERC1155Holder {
 
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
+            /// @notice itemId will never be 0 due to how counter is used
+            if (idToMarketItem[i + 1].seller == msg.sender) {
+                uint256 currentId = idToMarketItem[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
+        }
+
+        return items;
+    }
+
+    /**
+     * @notice fetch market items that were created by the caller
+     * @return market items created by the caller
+     */
+    function getMarketItemsCreatedByCallerERC1155() 
+        public 
+        view 
+        returns (MarketItem[] memory) 
+    {
+        uint256 totalItemCount = _item1155Ids.current();
+        uint256 itemCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].seller == msg.sender) {
+                itemCount += 1;
+            }
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            /// @notice itemId will never be 0 due to how counter is used
             if (idToMarketItem[i + 1].seller == msg.sender) {
                 uint256 currentId = idToMarketItem[i + 1].itemId;
                 MarketItem storage currentItem = idToMarketItem[currentId];

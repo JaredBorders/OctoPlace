@@ -1,14 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { tokenAddress, marketAddress } from '../config';
+import {
+	marketAddress,
+	erc721TradableAddress,
+	erc1155TradableAddress,
+} from '../config';
 import ItemCard from './components/ItemCard';
 import axios from 'axios';
 import Web3Modal from 'web3modal';
 
-// Market and Token artifacts
+// Market and Tradable token artifacts
 import Market from '../src/artifacts/contracts/Market.sol/Market.json';
-import Token from '../src/artifacts/contracts/Token.sol/Token.json';
+import ERC721Tradable from '../src/artifacts/contracts/ERC721Tradable.sol/ERC721Tradable.json';
+import ERC1155Tradable from '../src/artifacts/contracts/ERC1155Tradable.sol/ERC1155Tradable.json';
 
 const CreatedView = () => {
 	const [createdNFTs, setCreatedNFTs] = useState([]);
@@ -27,12 +32,16 @@ const CreatedView = () => {
 
 		const market = new ethers.Contract(marketAddress, Market.abi, signer);
 
-		const token = new ethers.Contract(tokenAddress, Token.abi, provider);
+		// Fetch ERC721 NFTs created by caller
 		const data = await market.getMarketItemsCreatedByCaller();
-
+		const erc721Tradable = new ethers.Contract(
+			erc721TradableAddress,
+			ERC721Tradable.abi,
+			provider
+		);
 		const createdMarketItems = await Promise.all(
 			data.map(async (item) => {
-				const tokenUri = await token.tokenURI(item.tokenId);
+				const tokenUri = await erc721Tradable.tokenURI(item.tokenId);
 				const meta = await axios.get(tokenUri); // http://{...}
 				let price = ethers.utils.formatUnits(
 					item.price.toString(),
@@ -47,12 +56,48 @@ const CreatedView = () => {
 					image: meta.data.image,
 					name: meta.data.name,
 					description: meta.data.description,
+					isERC1155: item.isERC1155,
 				};
 
 				return newMarketItem;
 			})
 		);
-		setCreatedNFTs(createdMarketItems);
+
+		// Fetch ERC1155 NFTs created by caller
+		data = await market.getMarketItemsCreatedByCallerERC1155();
+		const erc1155Tradable = new ethers.Contract(
+			erc1155TradableAddress,
+			ERC1155Tradable.abi,
+			provider
+		);
+		const createdMarketItemsERC1155 = await Promise.all(
+			data.map(async (item) => {
+				const tokenUri = await erc1155Tradable.getItemUriById(item.tokenId);
+				const meta = await axios.get(tokenUri); // http://{...}
+				let price = ethers.utils.formatUnits(
+					item.price.toString(),
+					'ether'
+				);
+
+				let newMarketItem = {
+					price,
+					tokenId: item.tokenId.toNumber(),
+					seller: item.seller,
+					owner: item.owner,
+					image: meta.data.image,
+					name: meta.data.name,
+					description: meta.data.description,
+					isERC1155: item.isERC1155,
+				};
+
+				return newMarketItem;
+			})
+		);
+
+		createdMarketItemsERC1155.length != 0
+			? setCreatedNFTs(...createdMarketItems, createdMarketItemsERC1155)
+			: setCreatedNFTs(createdMarketItems);
+
 		setLoading(false);
 	}
 

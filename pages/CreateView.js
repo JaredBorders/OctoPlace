@@ -3,12 +3,17 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { useRouter } from 'next/router';
-import { tokenAddress, marketAddress } from '../config';
+import {
+	marketAddress,
+	erc721TradableAddress,
+	erc1155TradableAddress,
+} from '../config';
 import Web3Modal from 'web3modal';
 
-// Market and Token artifacts
+// Market and Tradable token artifacts
 import Market from '../src/artifacts/contracts/Market.sol/Market.json';
-import Token from '../src/artifacts/contracts/Token.sol/Token.json';
+import ERC721Tradable from '../src/artifacts/contracts/ERC721Tradable.sol/ERC721Tradable.json';
+import ERC1155Tradable from '../src/artifacts/contracts/ERC1155Tradable.sol/ERC1155Tradable.json';
 
 // sets and pins items to ipfs
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
@@ -71,8 +76,12 @@ const CreateView = () => {
 			const signer = provider.getSigner();
 
 			// create token via token contract
-			let token = new ethers.Contract(tokenAddress, Token.abi, signer);
-			let transaction = await token.createToken(url);
+			let erc721Tradable = new ethers.Contract(
+				erc721TradableAddress,
+				ERC721Tradable.abi,
+				signer
+			);
+			let transaction = await erc721Tradable.createToken(url);
 			let tx = await transaction.wait();
 
 			// event: `Transfer(address(0), to, tokenId)` emited on token mint
@@ -82,7 +91,7 @@ const CreateView = () => {
 			// add token information to market (i.e. create a new market item)
 			let market = new ethers.Contract(marketAddress, Market.abi, signer);
 			transaction = await market.createMarketItem(
-				tokenAddress,
+				erc721TradableAddress,
 				tokenId,
 				ethers.utils.parseUnits(formInput.price, 'ether')
 			);

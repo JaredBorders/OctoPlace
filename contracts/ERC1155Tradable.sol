@@ -67,4 +67,16 @@ contract ERC1155Tradable is ERC1155 {
 
         return newTokenId;
     }
+
+    /**
+     * @param tokenId token id
+     * @return uri as a string
+     */
+    function getItemUriById(uint256 tokenId)
+        public
+        view
+        returns (string memory)
+    {
+        return customUri[tokenId];
+    }
 }

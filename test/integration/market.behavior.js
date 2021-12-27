@@ -73,7 +73,7 @@ describe("Market", () => {
       }
     );
 
-    let allUnsoldMarketItems = await market.getAllUnsoldMarketItems();
+    let allUnsoldMarketItems = await market.getAllUnsoldMarketItemsERC1155();
 
     expect(allUnsoldMarketItems[0].tokenAddress).to.equal(erc1155Tradable.address);
     expect(allUnsoldMarketItems[1].tokenAddress).to.equal(erc1155Tradable.address);
@@ -159,7 +159,7 @@ describe("Market", () => {
       }
     );
 
-    let allUnsoldMarketItems = await market.getAllUnsoldMarketItems();
+    let allUnsoldMarketItems = await market.getAllUnsoldMarketItemsERC1155();
     // 1 item sold, 1 has not
     expect(1).to.equal(allUnsoldMarketItems.length);
     
@@ -224,7 +224,7 @@ describe("Market", () => {
       }
     );
 
-    let tokensCreated = await market.getMarketItemsCreatedByCaller();
+    let tokensCreated = await market.getMarketItemsCreatedByCallerERC1155();
     expect(tokensCreated.length).to.equal(2);
   });
 
@@ -299,7 +299,7 @@ describe("Market", () => {
       }
     );
 
-    let tokensOwned = await market.getMarketItemsOwnedByCaller();
+    let tokensOwned = await market.getMarketItemsOwnedByCallerERC1155();
     expect(tokensOwned.length).to.equal(0);
 
     // execute buy/sell
@@ -319,10 +319,10 @@ describe("Market", () => {
       }
     );
 
-    let tokensOwnedByAddr1 = await market.connect(addr1).getMarketItemsOwnedByCaller();
+    let tokensOwnedByAddr1 = await market.connect(addr1).getMarketItemsOwnedByCallerERC1155();
     expect(tokensOwnedByAddr1.length).to.equal(1);
 
-    let tokensOwnedByAddr2 = await market.connect(addr2).getMarketItemsOwnedByCaller();
+    let tokensOwnedByAddr2 = await market.connect(addr2).getMarketItemsOwnedByCallerERC1155();
     expect(tokensOwnedByAddr2.length).to.equal(1);
   });
 });

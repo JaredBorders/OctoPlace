@@ -16,18 +16,10 @@ const ItemCard = (props) => {
 	const buyMarketItem = props.buyMarketItem;
 
 	useEffect(() => {
-		// var img = new Image();
-		// img.onload = function () {
-		// 	setImageHeight(this.height);
-		// 	console.log(this.height);
-		// };
-		// img.src = url;
-
 		imgRef.current.addEventListener('load', () => {
 			console.log(imgRef.current.clientHeight);
 			setImageHeight(imgRef.current.clientHeight);
-		})
-
+		});
 	});
 
 	return (

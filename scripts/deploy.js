@@ -33,7 +33,7 @@ async function main() {
 	const ERC1155Tradable = await hre.ethers.getContractFactory(
 		'ERC1155Tradable'
 	);
-	const erc1155Tradable = await ERC1155Tradable.deploy(market.address);
+	const erc1155Tradable = await ERC1155Tradable.deploy("", market.address);
 
 	await erc1155Tradable.deployed();
 
