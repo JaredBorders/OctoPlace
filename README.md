@@ -1,4 +1,4 @@
-# OctoPlace - NFT Marketplace by Octos.eth
+# [OctoPlace](https://octoplace-jaredborders.vercel.app/) - NFT Marketplace by Octos.eth
 - Supports buying and listing NFTs
 - Supports both [ERC721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) and [ERC1155](https://ethereum.org/en/developers/docs/standards/tokens/erc-1155/) token standards
 - NOTICE: All NFTs on Kovan test network are for testing purposes only! I do not claim ownership and am only using those images to replicate what is seen elsewhere.
