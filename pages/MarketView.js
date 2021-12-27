@@ -26,7 +26,7 @@ const MarketView = () => {
 	}, []);
 
 	const getMarketItems = async () => {
-		const provider = new ethers.providers.JsonRpcProvider();
+		const provider = new ethers.getDefaultProvider('kovan');
 		const market = new ethers.Contract(marketAddress, Market.abi, provider);
 		
 		// Fetch ERC721 NFTs which have not yet been sold/bought
