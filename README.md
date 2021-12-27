@@ -1,7 +1,6 @@
 # OctoPlace - NFT Marketplace by Octos.eth
 - Supports buying and listing NFTs
 - Supports both [ERC721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) and [ERC1155](https://ethereum.org/en/developers/docs/standards/tokens/erc-1155/) standards
-- (future) Interact with NFTs listed on OpenSea (https://docs.opensea.io/reference/api-overview)
 
 ## Quick start
 
@@ -25,6 +24,13 @@ deploy your contract:
 
 ```sh
 npx hardhat run scripts/deploy.js --network localhost
+```
+
+Next, update the config.js file with the three address generated via the deploy script
+```
+export const marketAddress = "ADDRESS_GOES_HERE";
+export const erc721TradableAddress = "ADDRESS_GOES_HERE";
+export const erc1155TradableAddress = "ADDRESS_GOES_HERE";
 ```
 
 Finally, we can run the frontend with:
