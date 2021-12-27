@@ -1,10 +1,14 @@
 # OctoPlace - NFT Marketplace by Octos.eth
 - Supports buying and listing NFTs
-- Supports both [ERC721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) and [ERC1155](https://ethereum.org/en/developers/docs/standards/tokens/erc-1155/) standards
+- Supports both [ERC721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) and [ERC1155](https://ethereum.org/en/developers/docs/standards/tokens/erc-1155/) token standards
 - NOTICE: All NFTs on Kovan test network are for testing purposes only! I do not claim ownership and am only using those images to replicate what is seen elsewhere.
 - - Proejcts used: [Divine Anarchy](https://opensea.io/collection/divineanarchy), [Humanoids](https://opensea.io/collection/thehumanoids), [RTFKTCloneXVial](https://opensea.io/collection/clonex), [MekaVerse](https://opensea.io/collection/mekaverse)
 > Big fan of these in case you couldn't tell
 
+## Frontend Improvements (Future)
+- Add alert/prompt for when no browser wallet is detected
+- While minting new NFT, show progress bar/indicator
+- Test!!
 ## Quick start
 
 The first things you need to do are cloning this repository and installing its
@@ -78,6 +82,8 @@ npx hardhat help
 - [Chai](https://www.chaijs.com/): A JavaScript assertion library.
 - [ethers.js](https://docs.ethers.io/ethers.js/html/): A JavaScript library for interacting with Ethereum.
 - [Waffle](https://github.com/EthWorks/Waffle/): To have Ethereum-specific Chai assertions/mathers.
+
+- See config.js for contract deployment addresses on Kovan network
 
 ## Troubleshooting
 
