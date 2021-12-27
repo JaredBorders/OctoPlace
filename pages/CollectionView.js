@@ -94,7 +94,10 @@ const CollectionView = () => {
 			})
 		);
 
-		setOwnedNFTs(...ownedMarketItems, ownedMarketItemsERC1155);
+		ownedMarketItemsERC1155.length != 0
+			? setOwnedNFTs(...ownedMarketItems, ownedMarketItemsERC1155)
+			: setOwnedNFTs(ownedMarketItems);
+			
 		setLoading(false);
 	}
 

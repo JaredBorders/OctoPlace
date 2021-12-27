@@ -13,6 +13,7 @@ import Web3Modal from 'web3modal';
 // Market and Tradable token artifacts
 import Market from '../src/artifacts/contracts/Market.sol/Market.json';
 import ERC721Tradable from '../src/artifacts/contracts/ERC721Tradable.sol/ERC721Tradable.json';
+import ERC1155Tradable from '../src/artifacts/contracts/ERC1155Tradable.sol/ERC1155Tradable.json';
 
 const MarketView = () => {
 	const [marketItems, setMarketItems] = useState([]);
@@ -27,28 +28,14 @@ const MarketView = () => {
 	const getMarketItems = async () => {
 		const provider = new ethers.providers.JsonRpcProvider();
 		const market = new ethers.Contract(marketAddress, Market.abi, provider);
+		
+		// Fetch ERC721 NFTs which have not yet been sold/bought
+		const data = await market.getAllUnsoldMarketItems();
 		const erc721Tradable = new ethers.Contract(
 			erc721TradableAddress,
 			ERC721Tradable.abi,
 			provider
 		);
-
-		const data = await market.getAllUnsoldMarketItems();
-
-		/* market item structure:
-			struct MarketItem {
-				uint256 itemId;
-				uint256 tokenId;
-				uint256 price;
-				address tokenAddress;
-				address payable seller;
-				address payable owner;
-				bool sold;
-				bool isERC1155;
-			}
-		*/
-
-		// map through marketItems and format
 		const unsoldMarketItems = await Promise.all(
 			data.map(async (item) => {
 				const tokenUri = await erc721Tradable.tokenURI(item.tokenId);
@@ -73,7 +60,41 @@ const MarketView = () => {
 			})
 		);
 
-		setMarketItems(unsoldMarketItems);
+		// Fetch ERC1155 NFTs which have not yet been sold/bought
+		data = await market.getAllUnsoldMarketItemsERC1155();
+		const erc1155Tradable = new ethers.Contract(
+			erc1155TradableAddress,
+			ERC1155Tradable.abi,
+			provider
+		);
+		const unsoldMarketItems1155 = await Promise.all(
+			data.map(async (item) => {
+				const tokenUri = await erc1155Tradable.getItemUriById(item.tokenId);
+				const meta = await axios.get(tokenUri); // http://{...}
+				let price = ethers.utils.formatUnits(
+					item.price.toString(),
+					'ether'
+				);
+
+				let newMarketItem = {
+					price,
+					tokenId: item.tokenId.toNumber(),
+					seller: item.seller,
+					owner: item.owner,
+					image: meta.data.image,
+					name: meta.data.name,
+					description: meta.data.description,
+					isERC1155: item.isERC1155,
+				};
+
+				return newMarketItem;
+			})
+		);
+
+		unsoldMarketItems1155.length != 0
+			? setMarketItems(...unsoldMarketItems, unsoldMarketItems1155)
+			: setMarketItems(unsoldMarketItems);
+			
 		setLoading(false);
 	};
 
