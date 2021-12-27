@@ -58,6 +58,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         address payable seller;
         address payable owner;
         bool sold;
+        bool isERC1155; // is this an erc1155Tradable or erc721Tradable nft?
     }
 
     mapping(uint256 => MarketItem) private idToMarketItem;
@@ -87,6 +88,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
             tokenAddress,
             payable(msg.sender),
             payable(address(0)),
+            false,
             false
         );
 
@@ -127,7 +129,8 @@ contract Market is ReentrancyGuard, ERC1155Holder {
             tokenAddress,
             payable(msg.sender),
             payable(address(0)),
-            false
+            false,
+            true
         );
 
         // transfer token from user to this address (market)
