@@ -6,7 +6,7 @@ import {
 	erc721TradableAddress,
 	erc1155TradableAddress,
 } from '../config';
-import ItemCard from './components/ItemCard';
+import ItemCard from '../components/ItemCard';
 import axios from 'axios';
 import Web3Modal from 'web3modal';
 
