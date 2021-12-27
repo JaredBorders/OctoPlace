@@ -69,6 +69,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
     }
 
     mapping(uint256 => MarketItem) private idToMarketItem;
+    mapping(uint256 => MarketItem) private idToMarketItemERC1155;
 
     /**
      * @notice create and list a market item
@@ -129,7 +130,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         uint256 itemId = _item1155Ids.current();
 
         // add new market item to {id => item} mapping.
-        idToMarketItem[itemId] = MarketItem(
+        idToMarketItemERC1155[itemId] = MarketItem(
             itemId,
             tokenId,
             price,
@@ -191,19 +192,19 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         nonReentrant
     {
         // fetch price and tokenId of token to be sold
-        uint256 price = idToMarketItem[itemId].price;
-        uint256 tokenId = idToMarketItem[itemId].tokenId;
+        uint256 price = idToMarketItemERC1155[itemId].price;
+        uint256 tokenId = idToMarketItemERC1155[itemId].tokenId;
         require(msg.value == price, "insufficient funds for transaction");
 
         // transfer selling price to current token owner (i.e. pay for asset)
-        idToMarketItem[itemId].seller.transfer(msg.value);
+        idToMarketItemERC1155[itemId].seller.transfer(msg.value);
 
         // transfer token from user to this address (market)
         IERC1155(tokenAddress).safeTransferFrom(address(this), msg.sender, tokenId, 0, "");
 
         // update market item state
-        idToMarketItem[itemId].owner = payable(msg.sender);
-        idToMarketItem[itemId].sold = true;
+        idToMarketItemERC1155[itemId].owner = payable(msg.sender);
+        idToMarketItemERC1155[itemId].sold = true;
 
         _items1155Sold.increment();
     }
@@ -218,6 +219,18 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         returns (MarketItem memory)
     {
         return idToMarketItem[marketItemId];
+    }
+
+    /**
+     * @param marketItemId item id
+     * @return market item
+     */
+    function getMarketItemByItemIdERC1155(uint256 marketItemId)
+        public
+        view
+        returns (MarketItem memory)
+    {
+        return idToMarketItemERC1155[marketItemId];
     }
 
     /**
@@ -265,9 +278,9 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         for (uint256 i = 0; i < itemCount; i++) {
             // if item owner is not set (i.e. has not been sold)
             /// @notice itemId will never be 0 due to how counter is used
-            if (idToMarketItem[i + 1].owner == address(0)) {
-                uint256 currentId = idToMarketItem[i + 1].itemId;
-                MarketItem storage currentItem = idToMarketItem[currentId];
+            if (idToMarketItemERC1155[i + 1].owner == address(0)) {
+                uint256 currentId = idToMarketItemERC1155[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItemERC1155[currentId];
                 items[currentIndex] = currentItem;
                 currentIndex += 1;
             }
@@ -323,7 +336,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         uint256 currentIndex = 0;
 
         for (uint256 i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i + 1].owner == msg.sender) {
+            if (idToMarketItemERC1155[i + 1].owner == msg.sender) {
                 itemCount += 1;
             }
         }
@@ -331,9 +344,9 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
             /// @notice itemId will never be 0 due to how counter is used
-            if (idToMarketItem[i + 1].owner == msg.sender) {
-                uint256 currentId = idToMarketItem[i + 1].itemId;
-                MarketItem storage currentItem = idToMarketItem[currentId];
+            if (idToMarketItemERC1155[i + 1].owner == msg.sender) {
+                uint256 currentId = idToMarketItemERC1155[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItemERC1155[currentId];
                 items[currentIndex] = currentItem;
                 currentIndex += 1;
             }
@@ -389,7 +402,7 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         uint256 currentIndex = 0;
 
         for (uint256 i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i + 1].seller == msg.sender) {
+            if (idToMarketItemERC1155[i + 1].seller == msg.sender) {
                 itemCount += 1;
             }
         }
@@ -397,9 +410,9 @@ contract Market is ReentrancyGuard, ERC1155Holder {
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
             /// @notice itemId will never be 0 due to how counter is used
-            if (idToMarketItem[i + 1].seller == msg.sender) {
-                uint256 currentId = idToMarketItem[i + 1].itemId;
-                MarketItem storage currentItem = idToMarketItem[currentId];
+            if (idToMarketItemERC1155[i + 1].seller == msg.sender) {
+                uint256 currentId = idToMarketItemERC1155[i + 1].itemId;
+                MarketItem storage currentItem = idToMarketItemERC1155[currentId];
                 items[currentIndex] = currentItem;
                 currentIndex += 1;
             }
