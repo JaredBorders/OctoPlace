@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/globals.css';
 import { ThemeProvider } from 'next-themes';
 import Link from 'next/link';
 
 function MyApp({ Component, pageProps }) {
 	const [isActive, setActive] = useState([true, false, false, false, false]);
+
+	useEffect(() => {
+		setActive([true, false, false, false, false]);
+	}, []);
 
 	const toggleClass = (i) => {
 		let newIsActive = [false, false, false, false, false];
@@ -90,7 +94,7 @@ function MyApp({ Component, pageProps }) {
 			<footer
 				className="flex justify-center border-t border-gray-500 py-8 inset-x-0 bottom-0 p-4"
 			>
-				<Link href="https://github.com/JaredBorders/OctoPlace"><a className="px-6 text-gray-400">Whitepaper</a></Link>
+				<Link href="https://github.com/JaredBorders/OctoPlace/blob/master/whitepaper_v1.pdf"><a className="px-6 text-gray-400">Whitepaper</a></Link>
 				<Link href="https://github.com/JaredBorders/OctoPlace/tree/master/contracts"><a className="px-6 text-gray-400">Contracts</a></Link>
 				<Link href="mailto: jlbxsxs@gmail.com"><a className="px-6 text-gray-400">Contact</a></Link>
 				
