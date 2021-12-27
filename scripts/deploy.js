@@ -21,21 +21,31 @@ async function main() {
 
 	console.log('Market deployed to:', market.address);
 
-	// Deploy Token.sol
-	const Token = await hre.ethers.getContractFactory('Token');
-	const token = await Token.deploy(market.address);
+	// Deploy ERC721Tradable.sol
+	const ERC721Tradable = await hre.ethers.getContractFactory('ERC721Tradable');
+	const erc721Tradable = await ERC721Tradable.deploy(market.address);
 
-	await token.deployed();
+	await erc721Tradable.deployed();
 
-	console.log('Token deployed to:', token.address);
+	console.log('erc721Tradable deployed to:', erc721Tradable.address);
 
-	// Deploy Token1155.sol
-	const Token1155 = await hre.ethers.getContractFactory('Token1155');
-	const token1155 = await Token.deploy(market.address);
+	// Deploy ERC721Tradable.sol
+	const ERC1155Tradable = await hre.ethers.getContractFactory(
+		'ERC1155Tradable'
+	);
+	const erc1155Tradable = await ERC1155Tradable.deploy(market.address);
 
-	await token1155.deployed();
+	await erc1155Tradable.deployed();
 
-	console.log('Token1155 deployed to:', token1155.address);
+	console.log('erc1155Tradable deployed to:', erc1155Tradable.address);
+
+	if (
+		market.address != null &&
+		erc721Tradable.address != null &&
+		erc1155Tradable.address != null
+	) {
+		console.log('All contracts deployed successfully!');
+	}
 }
 
 // We recommend this pattern to be able to use async/await everywhere
