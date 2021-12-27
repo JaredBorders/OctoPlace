@@ -1,6 +1,9 @@
 # OctoPlace - NFT Marketplace by Octos.eth
 - Supports buying and listing NFTs
 - Supports both [ERC721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) and [ERC1155](https://ethereum.org/en/developers/docs/standards/tokens/erc-1155/) standards
+- NOTICE: All NFTs on Kovan test network are for testing purposes only! I do not claim ownership and am only using those images to replicate what is seen elsewhere.
+- - Proejcts used: [Divine Anarchy](https://opensea.io/collection/divineanarchy), [Humanoids](https://opensea.io/collection/thehumanoids), [RTFKTCloneXVial](https://opensea.io/collection/clonex), [MekaVerse](https://opensea.io/collection/mekaverse)
+> Big fan of these in case you couldn't tell
 
 ## Quick start
 
