@@ -1,3 +1,3 @@
-export const marketAddress = "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE";
-export const erc721TradableAddress = "0x68B1D87F95878fE05B998F19b66F4baba5De1aed";
-export const erc1155TradableAddress = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c";
+export const marketAddress = "0xEbDC3f7213E27F5C804b596D1021Ab1b98d25a9C";
+export const erc721TradableAddress = "0xE994A7F1B143194B4254702DD51f323ad42e577A";
+export const erc1155TradableAddress = "0x4232e93C2219De798EF7f6ceF437b6Fa4Ec2f22C";
