@@ -31,10 +31,11 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * no nested (reentrant) calls to them.
  */
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 /// @title A Market for NFTs
 /// @author jaredborders
-contract Market is ReentrancyGuard {
+contract Market is ReentrancyGuard, ERC1155Holder {
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
     Counters.Counter private _itemsSold;
@@ -63,7 +64,7 @@ contract Market is ReentrancyGuard {
 
     /**
      * @notice create and list a market item
-     * @param tokenAddress address of token contract
+     * @param tokenAddress address of ERC721Tradable contract
      * @param tokenId id of token (@dev NOT item id)
      * @param price token listing price
      */
@@ -143,7 +144,7 @@ contract Market is ReentrancyGuard {
 
     /**
      * @notice buy market item and transfer ownership
-     * @param tokenAddress address of token contract
+     * @param tokenAddress address of ERC721Tradable contract
      * @param itemId id of token (@dev NOT token id)
      */
     function buyMarketItem(address tokenAddress, uint256 itemId)
@@ -171,7 +172,7 @@ contract Market is ReentrancyGuard {
 
     /**
      * @notice buy market item and transfer ownership
-     * @param tokenAddress address of token contract
+     * @param tokenAddress address of ERC1155Tradable contract
      * @param itemId id of token (@dev NOT token id)
      */
     function buyMarketItemERC1155(address tokenAddress, uint256 itemId)

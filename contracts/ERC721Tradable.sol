@@ -22,7 +22,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 /// @title Non-Fungible Token based on ERC721 standard
 /// @author jaredborders
-contract Token is ERC721URIStorage {
+contract ERC721Tradable is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     address marketAddress;
